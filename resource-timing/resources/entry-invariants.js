@@ -116,6 +116,21 @@ const invariants = {
       "fetchStart",
       "responseEnd",
     ]);
+  },
+
+  assert_same_origin_redirected_from_cross_origin_resource: entry => {
+    assert_zeroed_(entry, [
+      "redirectStart",
+    ]);
+
+    assert_ordered_(entry, [
+      "redirectStart",
+      "redirectEnd",
+      "fetchStart",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "connectStart",
+    ]);
   }
 };
 
