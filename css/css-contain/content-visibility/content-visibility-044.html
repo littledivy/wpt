@@ -23,7 +23,7 @@ async_test((t) => {
   t.step(async () => {
     container.classList.add("hidden");
     requestAnimationFrame(() => {
-      assert_equals(slotted.offsetTop, 0);
+      assert_equals(slotted.offsetTop, 8);
       container.innerHTML = "<div style='height: 20px;'></div><slot></slot>";
       t.done();
     });
