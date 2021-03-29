@@ -8,18 +8,30 @@
   #target::selection,
   #target::target-text,
   #target::spelling-error,
-  #target::grammar-error {
+  #target::grammar-error,
+  #target::highlight(foo) {
     background-color: green;
     color: lime;
+  }
+  #target::highlight(bar) {
+    background-color: cyan;
+    color: fuchsia;
   }
 </style>
 <div id="target"></div>
 <script>
-  for (const pseudo of ["::selection", "::target-text", "::spelling-error", "::grammar-error"]) {
+  for (const pseudo of ["::selection", "::target-text", "::spelling-error", "::grammar-error", "::highlight(foo)"]) {
     test(() => {
       let style = getComputedStyle(target, pseudo);
       assert_equals(style.backgroundColor, "rgb(0, 128, 0)", "Background color is green.");
       assert_equals(style.color, "rgb(0, 255, 0)", "Color is lime.");
     }, `getComputedStyle() for ${pseudo}`);
   }
+
+  const pseudo = "::highlight(bar)";
+  test(() => {
+    let style = getComputedStyle(target, pseudo);
+    assert_equals(style.backgroundColor, "rgb(0, 255, 255)", "Background color is cyan.");
+    assert_equals(style.color, "rgb(255, 0, 255)", "Color is fuchsia.");
+  }, `Different getComputedStyle() for ${pseudo} and same element`);
 </script>

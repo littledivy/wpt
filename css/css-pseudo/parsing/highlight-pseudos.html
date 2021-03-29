@@ -6,7 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
 <script>
-  for (const pseudo of ["::selection", "::target-text", "::spelling-error", "::grammar-error"]) {
+  for (const pseudo of ["::highlight(foo)", "::selection", "::target-text", "::spelling-error", "::grammar-error"]) {
     test_valid_selector(`${pseudo}`);
     test_valid_selector(`.a${pseudo}`);
     test_valid_selector(`div ${pseudo}`);
