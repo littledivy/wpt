@@ -14,17 +14,54 @@ test(testCase => {
     storageFoundation.deleteSync('test_file');
   });
 
-  const writtenBytes = Uint8Array.from([64, 65, 66, 67]);
-  const writeCount = file.write(writtenBytes, 0);
+  var writeBuffer = Uint8Array.from([64, 65, 66, 67]);
+  var {buffer: writeBuffer, writtenBytes} = file.write(writeBuffer, 0);
   assert_equals(
-      writeCount, 4,
-      'NativeIOFile.write() should resolve with the number of bytes written');
+      writtenBytes, 4,
+      'NativeIOFileSync.write() should resolve with the number of bytes written');
 
-  const readBytes = new Uint8Array(writtenBytes.length);
-  const readCount = file.read(readBytes, 0);
-  assert_equals(readCount, 4,
-                'NativeIOFile.read() should return the number of bytes read');
+  var readBuffer = new Uint8Array(writeBuffer.length);
+  var {buffer: readBuffer, readBytes} = file.read(readBuffer, 0);
+  assert_equals(
+      readBytes, 4,
+      'NativeIOFileSync.read() should return the number of bytes read');
 
-  assert_array_equals(readBytes, writtenBytes,
-                      'the bytes read should match the bytes written');
+  assert_array_equals(
+      readBuffer, writeBuffer, 'the bytes read should match the bytes written');
 }, 'NativeIOFileSync.read returns bytes written by NativeIOFileSync.write');
+
+test(testCase => {
+  reserveAndCleanupCapacitySync(testCase);
+  const file = createFileSync(testCase, 'test_file');
+
+  const inputBuffer = new Uint8Array(4);
+  const originalByteLength = inputBuffer.byteLength;
+  const {buffer: outputBuffer} = file.read(inputBuffer, 0);
+
+  assert_equals(
+      outputBuffer.byteLength, originalByteLength,
+      'NativeIOFileSync.read() should return a buffer with the same' +
+          'byteLength as the input buffer');
+
+  assert_equals(
+      inputBuffer.byteLength, 0,
+      'NativeIOFileSync.read() should detach the input buffer');
+}, 'NativeIOFileSync.read detaches the input buffer');
+
+test(testCase => {
+  reserveAndCleanupCapacitySync(testCase);
+  const file = createFileSync(testCase, 'test_file');
+
+  const inputBuffer = new Uint8Array(4);
+  const originalByteLength = inputBuffer.byteLength;
+  const {buffer: outputBuffer} = file.write(inputBuffer, 0);
+
+  assert_equals(
+      outputBuffer.byteLength, originalByteLength,
+      'NativeIOFileSync.write() should return a buffer with the same' +
+          'byteLength as the input buffer');
+
+  assert_equals(
+      inputBuffer.byteLength, 0,
+      'NativeIOFileSync.write() should detach the input buffer');
+}, 'NativeIOFileSync.write detaches the input buffer');

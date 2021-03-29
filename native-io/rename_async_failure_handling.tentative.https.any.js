@@ -20,15 +20,14 @@ promise_test(async testCase => {
     await file2.close();
   });
 
-  const writeSharedArrayBuffer1 = new SharedArrayBuffer(4);
-  const writtenBytes1 = new Uint8Array(writeSharedArrayBuffer1);
-  writtenBytes1.set([64, 65, 66, 67]);
-  const writeSharedArrayBuffer2 = new SharedArrayBuffer(4);
-  const writtenBytes2 = new Uint8Array(writeSharedArrayBuffer2);
-  writtenBytes2.set([96, 97, 98, 99]);
+  let writeBuffer1 = new Uint8Array(4);
+  writeBuffer1.set([64, 65, 66, 67]);
+  let writeBuffer2 = new Uint8Array(4);
+  writeBuffer2.set([96, 97, 98, 99]);
 
-  await file1.write(writtenBytes1, 0);
-  await file2.write(writtenBytes2, 0);
+  ({buffer: writeBuffer1} = await file1.write(writeBuffer1, 0));
+  ({buffer: writeBuffer2} = await file2.write(writeBuffer2, 0));
+
   await file1.close();
   await file2.close();
 
@@ -51,17 +50,15 @@ promise_test(async testCase => {
     await storageFoundation.delete('test_file_2');
   });
 
-  const readSharedArrayBuffer1 = new SharedArrayBuffer(writtenBytes1.length);
-  const readBytes1 = new Uint8Array(readSharedArrayBuffer1);
-  await file1_after.read(readBytes1, 0);
-  const readSharedArrayBuffer2 = new SharedArrayBuffer(writtenBytes2.length);
-  const readBytes2 = new Uint8Array(readSharedArrayBuffer2);
-  await file2_after.read(readBytes2, 0);
+  let readBuffer1 = new Uint8Array(writeBuffer1.length);
+  ({buffer: readBuffer1} = await file1_after.read(readBuffer1, 0));
+  let readBuffer2 = new Uint8Array(writeBuffer2.length);
+  ({buffer: readBuffer2} = await file2_after.read(readBuffer2, 0));
   assert_array_equals(
-      readBytes1, writtenBytes1,
+      readBuffer1, writeBuffer1,
       'the bytes read should match the bytes written');
   assert_array_equals(
-      readBytes2, writtenBytes2,
+      readBuffer2, writeBuffer2,
       'the bytes read should match the bytes written');
 }, 'storageFoundation.rename does not overwrite an existing file.');
 
