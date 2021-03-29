@@ -385,6 +385,10 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         desc = test.get('desc', '')
         escaped_desc = simpleEscapeJS(desc)
 
+        attributes = test.get('attributes', '')
+        if attributes:
+            attributes = ', ' + attributes.strip()
+
         for (variant, extra_script) in script_variants:
             name_variant = '' if not variant else '.' + variant
 
@@ -397,7 +401,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                 'fonts':fonts, 'fonthack':fonthack, 'timeout': timeout,
                 'canvas':canvas, 'expected':expectation_html, 'code':code,
                 'scripts':scripts + extra_script,
-                'fallback':fallback
+                'fallback':fallback, 'attributes':attributes
             }
 
             f = codecs.open('%s/%s%s.html' % (TESTOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
